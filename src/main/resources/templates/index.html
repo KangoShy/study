@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>测试</title>
+</head>
+<body>
+<h3>Message</h3>
+<br/><button onclick="subscribe1()">订阅群聊消息</button>
+<input id="text" type="text"/>
+<button id="myBtn" onclick="send()">发送</button>
+<hr/>
+<img th:src="@{static/img/133065819709024871.jpg}"/>
+<button onclick="closeWebSocket()" style="color: red">退出聊天室</button>
+<hr/>
+<div id="message" style="font-size: 12px;color: darkgreen"></div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script>
+
+    let username = prompt("我是谁？");
+    if (username == null) {
+        username = "这货不写名字";
+    }
+
+    let dyCount = false;
+
+    // websocket的连接地址:表示连接的SockJS的endpoint名称为/websocket
+    var socket = new SockJS("/websocket");
+    // 使用STOMP来创建WebSocket客户端
+    var stompClient = Stomp.over(socket);
+    //调用stompClient中的connect方法来连接服务端
+    // 向服务器发起websocket连接并发送CONNECT帧
+    stompClient.connect({}, function connectCallback(frame) {
+            // 连接成功时（服务器响应 CONNECTED 帧）的回调方法
+            setMessageInnerHTML("【连接成功】");
+            //调用stompClient中的subscribe方法来订阅/topic/getResponse发送来的消息
+            //也就是我们在Controller中的broadcast方法上添加的@SendTo注解的参数。
+            //stompClient中的send方法表示发送一条消息到服务端，
+            // 客户端订阅消息的目的地址：此值BroadcastCtl中被@SendTo("/topic/subscribeTest")注解的里配置的值
+
+            stompClient.subscribe('/topic/getResponse', function (response) {
+                var returnData = JSON.parse(response.body);
+                setMessageInnerHTML(returnData.responseMessage);
+            });
+        },
+        function errorCallBack(error) {
+            // 连接失败时（服务器响应 ERROR 帧）的回调方法
+            setMessageInnerHTML("【连接失败】");
+        }
+    );
+
+    var input = document.getElementById("text");
+    input.addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            document.getElementById("myBtn").click();
+        }
+    });
+
+
+    //发送消息
+    function send() {
+        // 客户端消息发送的目的：服务端使用BroadcastCtl中
+        // @MessageMapping("/sendTest")注解的方法来处理发送过来的消息
+        var message = "【" + username + " " + getNowTime() + "】 " + document.getElementById('text').value;
+        var messageJson = JSON.stringify({"name": message});
+        stompClient.send("/app/sendTest", {}, messageJson);
+        document.getElementById('text').value = "";
+        $('#text').focus(); // 光标定位到文本框
+    }
+
+    //订阅消息
+    function subscribe1() {
+        if (!dyCount) {
+            stompClient.subscribe('/topic/subscribeTest', function (response) {
+                var returnData = JSON.parse(response.body);
+                setMessageInnerHTML(returnData.responseMessage);
+            });
+            dyCount = true;
+            setMessageInnerHTML("【订阅成功，已加入群聊！】");
+        }
+    }
+
+    //将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        let message = document.getElementById('message');
+        message.innerHTML += innerHTML + '<br/>';
+    }
+
+    //断开
+    function closeWebSocket() {
+        if (stompClient != null) {
+            stompClient.disconnect();
+        }
+        setMessageInnerHTML("【" + username + "退出了群聊！】");
+
+    }
+
+    function getNowTime () {
+        let now = new Date();
+        let year = now.getFullYear(); //获取完整的年份(4位,1970-????)
+        let month = now.getMonth() + 1; //获取当前月份(0-11,0代表1月)
+        let today = now.getDate(); //获取当前日(1-31)
+        let hour = now.getHours(); //获取当前小时数(0-23)
+        let minute = now.getMinutes(); //获取当前分钟数(0-59)
+        let second = now.getSeconds(); //获取当前秒数(0-59)
+        let nowTime = ''
+        nowTime = year + '-' + fillZero(month) + '-' + fillZero(today) + ' ' + fillZero(hour) + ':' +
+            fillZero(minute) + ':' + fillZero(second)
+        return nowTime
+    }
+
+    function fillZero (str) {
+        var realNum;
+        if (str < 10) {
+            realNum = '0' + str;
+        } else {
+            realNum = str;
+        }
+        return realNum;
+    }
+</script>
+</html>
