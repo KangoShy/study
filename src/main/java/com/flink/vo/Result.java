@@ -21,6 +21,25 @@ public class Result<T> {
         return result;
     }
 
+    public static Result success() {
+        Result<?> result = new Result<>();
+        result.setSuccess(true);
+        return result;
+    }
+
+    public static Result fail() {
+        Result<?> result = new Result<>();
+        result.setSuccess(false);
+        return result;
+    }
+
+    public static Result fail(String message) {
+        Result<?> result = new Result<>();
+        result.setMsg(message);
+        result.setSuccess(false);
+        return result;
+    }
+
     public Result() {
         time = new Date().getTime();
     }
