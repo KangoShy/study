@@ -1,4 +1,4 @@
-package com.flink.aop;
+package com.flink.annotation;
 
 import java.lang.annotation.*;
 

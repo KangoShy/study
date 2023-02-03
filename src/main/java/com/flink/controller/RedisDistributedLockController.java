@@ -23,6 +23,11 @@ import java.util.UUID;
 
 /**
  * redis 分布式锁实践
+ *
+ * @see com.flink.config.RedisConfig
+ * @see RedisDistributedLockMapper
+ * lock.lua
+ * unLock.lua
  */
 @RestController
 public class RedisDistributedLockController {

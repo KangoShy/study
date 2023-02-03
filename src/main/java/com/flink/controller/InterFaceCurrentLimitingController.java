@@ -1,6 +1,6 @@
 package com.flink.controller;
 
-import com.flink.aop.RateLimiter;
+import com.flink.annotation.RateLimiter;
 import com.flink.vo.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 接口限流实践
+ *
+ * @see com.flink.config.RedisConfig
+ * @see com.flink.aop.CurrentLimitAspect
+ * @see RateLimiter
+ * limit.lua
  */
 @RestController
 public class InterFaceCurrentLimitingController {
