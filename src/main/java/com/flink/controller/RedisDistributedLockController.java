@@ -57,7 +57,7 @@ public class RedisDistributedLockController {
             return Result.fail("Nonexistence of commodity!");
         }
 
-        Long stock = shopStock.getStock();
+        Integer stock = shopStock.getStock();
         if (stock <= ZERO) {
             return Result.fail("UnderStock!");
         }

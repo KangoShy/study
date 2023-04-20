@@ -1,10 +1,24 @@
+/*
+-- auto-generated definition
+create table shop_stock
+(
+    stock_id  bigint auto_increment
+        primary key,
+    shop_id   varchar(30)  not null,
+    shop_name varchar(255) not null,
+    stock     bigint       not null,
+    constraint shop_stock_shop_id_uindex
+        unique (shop_id),
+    constraint shop_stock_stock_id_uindex
+        unique (stock_id)
+);
+ */
 package com.flink.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,7 +41,7 @@ public class ShopStock {
      * 商品ID
      */
     @TableField("shop_id")
-    private Long shopId;
+    private String shopId;
 
     /**
      * 商品名称
@@ -39,5 +53,5 @@ public class ShopStock {
      * 库存量
      */
     @TableField("stock")
-    private Long stock;
+    private Integer stock;
 }

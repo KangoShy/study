@@ -9,4 +9,9 @@ public class StringUtil {
         return var.toString();
     }
 
+    @SuppressWarnings("ALL")
+    public static  <T> T cast(Object o) {
+        return (T)o;
+    }
+
 }
